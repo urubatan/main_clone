@@ -8,16 +8,16 @@ task :default do
 end
 
 task :spec do
-  require 'spec/rake/spectask'
+  require 'spec/rake/spectask' rescue nil
   Spec::Rake::SpecTask.new do |t|
     t.spec_files = FileList['spec/*_spec.rb']
   end
 end
 
 task :gemspec do
-  ignore_extensions = 'git', 'svn', 'tmp', /sw./, 'bak', 'gem'
-  ignore_directories = 'pkg'
-  ignore_files = 'test/log'
+  ignore_extensions = ['git', 'svn', 'tmp', /sw./, 'bak', 'gem']
+  ignore_directories = ['pkg']
+  ignore_files = ['test/log']
 
   shiteless = 
     lambda do |list|
@@ -219,7 +219,7 @@ BEGIN {
 
     def unindent(s)
       indent = nil
-      s.each do |line|
+      s.each_line do |line|
       next if line =~ %r/^\s*$/
       indent = line[%r/^\s*/] and break
     end
@@ -234,7 +234,7 @@ BEGIN {
       @template = block.call.to_s
     end
     def expand(b=nil)
-      ERB.new(Util.unindent(@template)).result(b||@block)
+      ERB.new(Util.unindent(@template)).result((b.nil? ? @block.binding : b.binding))
     end
     alias_method 'to_s', 'expand'
   end
